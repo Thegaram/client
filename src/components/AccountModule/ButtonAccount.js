@@ -9,8 +9,8 @@ import {
   textStyle,
   useTheme,
   useViewport,
-} from '@aragon/ui'
-import { shortenAddress } from '../../web3-utils'
+} from '@conflux-/aragon-ui'
+import { formatAddress, shortenAddress } from '../../web3-utils'
 import { useWallet } from '../../wallet'
 
 const ButtonAccount = React.forwardRef(function ButtonAccount(
@@ -83,7 +83,7 @@ const ButtonAccount = React.forwardRef(function ButtonAccount(
                     {label}
                   </div>
                 ) : (
-                  <div>{shortenAddress(wallet.account)}</div>
+                  <div>{shortenAddress(formatAddress(wallet.account), 8)}</div>
                 )}
               </div>
               <div

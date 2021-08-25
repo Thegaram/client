@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Spring, animated } from 'react-spring'
-import { useTheme } from '@aragon/ui'
+import { useTheme } from '@conflux-/aragon-ui'
 import { EthereumAddressType, ClientThemeType } from './prop-types'
 import { useWallet } from './wallet'
 import { network, web3Providers } from './environment'
@@ -44,13 +44,17 @@ const INITIAL_DAO_STATE = {
   repos: [],
 }
 
+// const SELECTOR_NETWORKS = [
+//   ['main', 'Ethereum Mainnet', 'https://client.aragon.org/'],
+//   [
+//     'rinkeby',
+//     'Ethereum Testnet (Rinkeby)',
+//     'https://rinkeby.client.aragon.org/',
+//   ],
+// ]
 const SELECTOR_NETWORKS = [
-  ['main', 'Ethereum Mainnet', 'https://client.aragon.org/'],
-  [
-    'rinkeby',
-    'Ethereum Testnet (Rinkeby)',
-    'https://rinkeby.client.aragon.org/',
-  ],
+  ['cfx_testnet', 'Conflux Testnet', '/'],
+  ['cfx', 'Conflux Mainnet', '/'],
 ]
 if (network.type === 'ropsten') {
   SELECTOR_NETWORKS.push([

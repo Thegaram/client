@@ -6,8 +6,9 @@ import Web3 from 'web3'
 import { toWei } from 'web3-utils'
 import BN from 'bn.js'
 import { InvalidNetworkType, InvalidURI, NoConnection } from './errors'
-import { network } from './environment'
+import { network, web3Providers } from './environment'
 import { log } from './utils'
+import { format } from 'js-conflux-sdk'
 
 const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ETH_ADDRESS_SPLIT_REGEX = /(0x[a-fA-F0-9]{40}(?:\b|\.|,|\?|!|;))/g
@@ -61,7 +62,7 @@ export async function checkValidEthNode(uri, expectedNetworkType) {
   }
 
   try {
-    const web3 = new Web3(uri)
+    const web3 = getWeb3(web3Providers.default)
     const connectedNetworkType = await web3.eth.net.getNetworkType()
     if (web3.currentProvider.disconnect) {
       web3.currentProvider.disconnect()
@@ -142,6 +143,7 @@ export async function getIsContractAccount(web3, account) {
 }
 
 const gasPriceApi = 'https://ethgasstation.info/json/ethgasAPI.json'
+
 export async function getGasPrice({
   mainnet: { safeMinimum = '3', disableEstimate } = {},
 } = {}) {
@@ -281,6 +283,10 @@ export function shortenAddress(address, charsLength = 4) {
   )
 }
 
+export function formatAddress(address) {
+  return format.address(address, network.chainId)
+}
+
 // Detect Ethereum addresses in a string and transform each part.
 //
 // `callback` is called on every part with two params:
@@ -295,6 +301,7 @@ export function transformAddresses(str, callback) {
     )
 }
 
+export const hexAddress = address => format.hexAddress(formatAddress(address))
 // Re-export some utilities from web3-utils
 export {
   fromWei,

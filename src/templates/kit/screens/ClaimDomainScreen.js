@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Info, GU, Link } from '@aragon/ui'
+import { Info, GU, Link } from '@conflux-/aragon-ui'
 import {
   useCheckDomain,
   DOMAIN_CHECK,
@@ -75,7 +75,7 @@ function ClaimDomainScreen({
         Aragon uses the{' '}
         <Link href="https://ens.domains/">Ethereum Name Service (ENS)</Link> to
         assign names to organizations. The name you choose will be mapped to
-        your organization’s Ethereum address and cannot be changed after you
+        your organization’s Conflux address and cannot be changed after you
         launch your organization.
       </Info>
 

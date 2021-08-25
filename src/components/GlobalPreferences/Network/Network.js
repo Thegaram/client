@@ -10,18 +10,25 @@ import {
   textStyle,
   useLayout,
   useTheme,
-} from '@aragon/ui'
+} from '@conflux-/aragon-ui'
 import { defaultEthNode, ipfsDefaultConf, network } from '../../../environment'
 import { InvalidNetworkType, InvalidURI, NoConnection } from '../../../errors'
-import { setDefaultEthNode, setIpfsGateway } from '../../../local-settings'
+import {
+  setDefaultEthNode,
+  setIpfsGateway,
+  setIndexingService,
+  getIndexingService,
+} from '../../../local-settings'
 import keycodes from '../../../keycodes'
 import { sanitizeNetworkType } from '../../../network-config'
-import { checkValidEthNode } from '../../../web3-utils'
+// import { checkValidEthNode } from '../../../web3-utils'
 
 function Network({ wrapper }) {
   const {
     ethNode,
     ipfsGateway,
+    indexingService,
+    handleIndexingServiceChange,
     handleNetworkChange,
     handleClearCache,
     networkError,
@@ -32,12 +39,11 @@ function Network({ wrapper }) {
   const theme = useTheme()
   const { layoutName } = useLayout()
   const compact = layoutName === 'small'
-
   return (
     <React.Fragment>
       <Box heading="Node settings">
         <Label theme={theme}>
-          Ethereum node
+          Conflux node
           <TextInput
             value={ethNode}
             wide
@@ -67,7 +73,7 @@ function Network({ wrapper }) {
                 if (networkError instanceof NoConnection) {
                   return 'Could not connect to node'
                 }
-                return 'URI does not seem to be a ETH node'
+                return 'URI does not seem to be a Conflux node'
               })()}
             </span>
           )}
@@ -78,6 +84,18 @@ function Network({ wrapper }) {
             value={ipfsGateway}
             wide
             onChange={handleIpfsGatewayChange}
+            css={`
+              ${textStyle('body2')};
+              color: ${theme.contentSecondary};
+            `}
+          />
+        </Label>
+        <Label theme={theme}>
+          Indexer
+          <TextInput
+            value={indexingService}
+            wide
+            onChange={handleIndexingServiceChange}
             css={`
               ${textStyle('body2')};
               color: ${theme.contentSecondary};
@@ -103,6 +121,7 @@ function Network({ wrapper }) {
           css={`
             margin-bottom: ${2 * GU}px;
           `}
+          disabled={!wrapper}
           onClick={handleClearCache}
           wide={compact}
         >
@@ -123,23 +142,30 @@ Network.propTypes = {
 }
 
 const useNetwork = wrapper => {
-  const [networkError, setNetworkError] = useState(null)
+  const [networkError] = useState(null)
   const [ethNode, setEthNodeValue] = useState(defaultEthNode)
   const [ipfsGateway, setIpfsGatewayValue] = useState(ipfsDefaultConf.gateway)
+  const [indexingService, setIndexingServiceValue] = useState(
+    getIndexingService()
+  )
 
   const handleNetworkChange = useCallback(async () => {
-    try {
-      await checkValidEthNode(ethNode, network.type)
-    } catch (err) {
-      setNetworkError(err)
-      return
-    }
+    /* checkValidateEthNode is using net_version that is not implemented in cfx 
+    reference@src/conflux-provider-wrapper.js #447 */
+
+    // try {
+    //   await checkValidEthNode(ethNode, network.type)
+    // } catch (err) {
+    //   setNetworkError(err)
+    //   return
+    // }
 
     setDefaultEthNode(ethNode)
     setIpfsGateway(ipfsGateway)
+    setIndexingService(indexingService)
     // For now, we have to reload the page to propagate the changes
     window.location.reload()
-  }, [ethNode, ipfsGateway])
+  }, [ethNode, indexingService, ipfsGateway])
   const handleClearCache = useCallback(async () => {
     await wrapper.cache.clear()
     window.localStorage.clear()
@@ -166,6 +192,7 @@ const useNetwork = wrapper => {
     ethNode,
     network,
     ipfsGateway,
+    indexingService,
     handleNetworkChange,
     handleClearCache,
     networkError,
@@ -173,6 +200,8 @@ const useNetwork = wrapper => {
       setEthNodeValue(value),
     handleIpfsGatewayChange: ({ currentTarget: { value } }) =>
       setIpfsGatewayValue(value),
+    handleIndexingServiceChange: ({ currentTarget: { value } }) =>
+      setIndexingServiceValue(value),
   }
 }
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Button } from '@aragon/ui'
+import { Button } from '@conflux-/aragon-ui'
 import {
   fetchApmArtifact,
   getRecommendedGasLimit,
@@ -27,6 +27,8 @@ import {
   STATUS_TEMPLATE_SCREENS,
   STATUS_DEPLOYMENT,
 } from './create-statuses'
+import { useWallet } from '../../wallet'
+import { format } from 'js-conflux-sdk'
 
 // Used during the template selection phase, since we don’t know yet what are
 // going to be the configuration steps.
@@ -185,6 +187,17 @@ function useTemplateRepoInformation(templateRepoAddress) {
     const fetchArtifact = () => {
       fetchApmArtifact(templateRepoAddress)
         .then(templateInfo => {
+          // HACK
+          // modify ABI without re-deploying template
+          const id = templateInfo.abi.findIndex(
+            x => x.name === 'newTokenAndInstance'
+          )
+
+          if (id >= 0 && templateInfo.abi[id].inputs.length === 8) {
+            templateInfo.abi[id].inputs.push({ name: 'epoch', type: 'uint256' })
+          }
+          // </HACK>
+
           if (!cancelled) {
             setTemplateAddress(templateInfo.contractAddress)
             setTemplateAbi(templateInfo.abi)
@@ -230,15 +243,20 @@ function useDeploymentState(
     error: -1,
   })
 
+  // get current epoch number for template initialization
+  const { getBlockNumber } = useWallet()
+  const epoch = getBlockNumber() - 100 // account for some fluctuation
+
   const deployTransactions = useMemo(
     () =>
       status === STATUS_DEPLOYMENT && templateAbi && templateAddress
         ? template.prepareTransactions(
             prepareTransactionCreatorFromAbi(templateAbi, templateAddress),
-            templateData
+            templateData,
+            epoch
           )
         : null,
-    [status, templateAbi, templateAddress, template, templateData]
+    [status, templateAbi, templateAddress, template, templateData] // eslint-disable-line
   )
 
   // Call tx functions in the template, one after another.
@@ -265,22 +283,33 @@ function useDeploymentState(
 
           transaction = {
             ...transaction,
-            from: account,
+            to: format.hexAddress(transaction.to),
           }
+
+          if (account) {
+            transaction.from = format.hexAddress(account)
+          }
+
           try {
             transaction = await applyEstimateGas(transaction)
-          } catch (_) {}
+          } catch (err) {
+            log('err in apply estimategas', err)
+            throw err
+          }
 
           if (!cancelled) {
             try {
-              await walletWeb3.eth.sendTransaction(transaction)
-
-              if (!cancelled) {
-                setTransactionProgress(({ signed, errored }) => ({
-                  signed: signed + 1,
-                  errored,
-                }))
-              }
+              await walletWeb3.eth.sendTransaction(
+                transaction,
+                (err, response) => {
+                  if (!err && !!response && !cancelled) {
+                    setTransactionProgress(({ signed, errored }) => ({
+                      signed: signed + 1,
+                      errored,
+                    }))
+                  }
+                }
+              )
             } catch (err) {
               log('Failed onboarding transaction', err)
               if (!cancelled) {
@@ -296,7 +325,7 @@ function useDeploymentState(
           }
         }, Promise.resolve())
     }
-    createTransactions()
+    void createTransactions()
 
     return () => {
       cancelled = true
@@ -400,11 +429,13 @@ const Create = React.memo(function Create({
       const recommendedPrice = await getGasPrice()
       return {
         ...transaction,
+        to: format.hexAddress(transaction.to),
+        from: format.hexAddress(account),
         gas: recommendedLimit,
         gasPrice: recommendedPrice,
       }
     },
-    [web3]
+    [account, web3]
   )
 
   const [attempts, setAttempts] = useState(0)

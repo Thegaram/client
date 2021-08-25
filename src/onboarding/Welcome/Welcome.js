@@ -1,6 +1,13 @@
 import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
-import { Link, DropDown, GU, Layout, Split, useTheme } from '@aragon/ui'
+import {
+  Link,
+  DropDown,
+  GU,
+  Layout,
+  Split,
+  useTheme,
+} from '@conflux-/aragon-ui'
 import { network } from '../../environment'
 import { useSuggestedOrgs } from '../../suggested-orgs'
 import Header from '../Header/Header'
@@ -124,8 +131,8 @@ function CreateSubtitle({ error }) {
           color: ${theme.negative};
         `}
       >
-        You need at least {errorData.minimumBalance} ETH (
-        <strong>you have {errorData.balance} ETH</strong>
+        You need at least {errorData.minimumBalance} CFX (
+        <strong>you have {errorData.balance} CFX</strong>
         ).
       </span>
     )

@@ -67,6 +67,7 @@ class ActivityProviderBase extends React.Component {
 
   componentDidUpdate(prevProps) {
     const { daoDomain, account } = this.props
+    this.refreshPendingActivities()
     if (daoDomain !== prevProps.daoDomain || account !== prevProps.account) {
       this.updateStoredList()
     }
@@ -93,13 +94,16 @@ class ActivityProviderBase extends React.Component {
       .filter(({ status }) => status === ACTIVITY_STATUS_PENDING)
       .forEach(async ({ transactionHash }) => {
         try {
-          const tx = await web3.eth.getTransaction(`${transactionHash}`)
-          // tx is null if no tx was found
-          if (tx && tx.blockNumber) {
-            this.setActivityConfirmed(transactionHash)
-          }
+          await web3.eth.getTransaction(`${transactionHash}`, (err, tx) => {
+            // tx is null if no tx was found
+            if (!err && !!tx && tx.epochHeight) {
+              this.setActivityConfirmed(transactionHash)
+            }
+          })
         } catch (e) {
-          console.error(`Failed to refresh transaction ${transactionHash}`)
+          console.error(
+            `Failed to refresh transaction ${transactionHash}: ${e}`
+          )
         }
       })
   }
@@ -260,6 +264,7 @@ function ActivityProvider(props) {
   const { account } = useWallet()
   return <ActivityProviderBase account={account} {...props} />
 }
+
 ActivityProvider.propTypes = ActivityProviderBase.propTypes
 
 const ActivityConsumer = ActivityContext.Consumer

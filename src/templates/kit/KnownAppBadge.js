@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { AppBadge } from '@aragon/ui'
+import { AppBadge } from '@conflux-/aragon-ui'
 import iconSvgAddressBook from './icons/address-book.svg'
 import iconSvgAgent from './icons/agent.svg'
 import iconSvgAllocations from './icons/allocations.svg'
@@ -40,6 +40,7 @@ const KNOWN_ICONS = new Map([
 function KnownAppBadge({ appName, compact, label }) {
   return <AppBadge badgeOnly iconSrc={KNOWN_ICONS.get(appName)} label={label} />
 }
+
 KnownAppBadge.propTypes = {
   appName: PropTypes.string.isRequired,
   compact: PropTypes.bool,

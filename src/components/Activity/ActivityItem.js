@@ -9,7 +9,7 @@ import {
   blockExplorerUrl,
   textStyle,
   useTheme,
-} from '@aragon/ui'
+} from '@conflux-/aragon-ui'
 import { ActivityContext } from '../../contexts/ActivityContext'
 import { network } from '../../environment'
 import { transformAddresses } from '../../web3-utils'
@@ -90,7 +90,7 @@ const ActivityItem = ({ activity }) => {
             <div
               css={`
                 margin-left: ${1 * GU}px;
-                max-width: ${12.5 * GU}px
+                max-width: ${12.5 * GU}px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;

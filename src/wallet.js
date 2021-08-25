@@ -4,8 +4,8 @@ import BN from 'bn.js'
 import { useWallet as useWalletBase, UseWalletProvider } from 'use-wallet'
 import { getFortmaticApiKey, getPortisDappId } from './local-settings'
 import { getProviderFromUseWalletId } from './ethereum-providers'
-import { network } from './environment'
-import { getWeb3, filterBalanceValue } from './web3-utils'
+import { network, web3Providers } from './environment'
+import { getWeb3, filterBalanceValue, formatAddress } from './web3-utils'
 
 const NETWORK_TYPE_DEFAULT = 'private'
 
@@ -16,8 +16,7 @@ function WalletContextProvider({ children }) {
     account,
     balance,
     ethereum,
-    activated,
-    activating,
+    connector,
     ...walletBaseRest
   } = useWalletBase()
 
@@ -46,6 +45,8 @@ function WalletContextProvider({ children }) {
         setNetworkType(NETWORK_TYPE_DEFAULT)
       })
 
+    console.log('account', account, formatAddress(account))
+
     return () => {
       cancel = true
       setWalletWeb3(null)
@@ -59,12 +60,12 @@ function WalletContextProvider({ children }) {
       balance: new BN(filterBalanceValue(balance)),
       ethereum,
       networkType,
-      providerInfo: getProviderFromUseWalletId(activated),
+      providerInfo: getProviderFromUseWalletId(connector),
       web3: walletWeb3,
       ...walletBaseRest,
     }),
     [
-      activated,
+      connector,
       account,
       balance,
       ethereum,
@@ -78,6 +79,7 @@ function WalletContextProvider({ children }) {
     <WalletContext.Provider value={wallet}>{children}</WalletContext.Provider>
   )
 }
+
 WalletContextProvider.propTypes = { children: PropTypes.node }
 
 export function WalletProvider({ children }) {
@@ -87,13 +89,14 @@ export function WalletProvider({ children }) {
       connectors={{
         fortmatic: { apiKey: getFortmaticApiKey() },
         portis: { dAppId: getPortisDappId() },
-        provided: { provider: window.cleanEthereum },
+        provided: { provider: web3Providers.cfx },
       }}
     >
       <WalletContextProvider>{children}</WalletContextProvider>
     </UseWalletProvider>
   )
 }
+
 WalletProvider.propTypes = { children: PropTypes.node }
 
 export function useWallet() {

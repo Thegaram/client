@@ -1,6 +1,13 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { ButtonBase, GU, Link, RADIUS, useTheme, textStyle } from '@aragon/ui'
+import {
+  ButtonBase,
+  GU,
+  Link,
+  RADIUS,
+  useTheme,
+  textStyle,
+} from '@conflux-/aragon-ui'
 import { getProviderFromUseWalletId } from '../../ethereum-providers'
 import { providers } from '../../environment'
 
@@ -86,8 +93,11 @@ function AccountModuleProvidersScreen({ onActivate }) {
           padding: 0 ${2 * GU}px ${1 * GU}px;
         `}
       >
-        <Link href="https://ethereum.org/wallets/" css="text-decoration: none">
-          Don’t have an Ethereum account?
+        <Link
+          href="https://portal.conflux-chain.org/"
+          css="text-decoration: none"
+        >
+          Don’t have a Conflux account?
         </Link>
       </div>
     </div>

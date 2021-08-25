@@ -9,13 +9,14 @@ import {
   LoadingRing,
   useTheme,
   textStyle,
-} from '@aragon/ui'
+} from '@conflux-/aragon-ui'
 import { AppType } from '../../../prop-types'
 import LocalIdentityBadge from '../../IdentityBadge/LocalIdentityBadge'
 import { deleteSubscriptions } from './notification-service-api'
 import SubscriptionFilters from './SubscriptionFilters'
 import { DeleteSubscriptionConfirmationModal } from './NotificationModals'
 import LocalLabelAppBadge from '../../LocalLabelAppBadge/LocalLabelAppBadge'
+import { network } from '../../../environment'
 
 /**
  * Filters the subscriptions based on the search criteria
@@ -259,7 +260,13 @@ const SubscriptionsTable = React.memo(function SubscriptionsTable({
             if (!app) {
               return appName
             }
-            return <LocalLabelAppBadge app={app} apps={apps} />
+            return (
+              <LocalLabelAppBadge
+                app={app}
+                chainId={network.chainId}
+                apps={apps}
+              />
+            )
           })()
 
           return [

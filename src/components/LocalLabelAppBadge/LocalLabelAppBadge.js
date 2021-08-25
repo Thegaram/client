@@ -1,6 +1,6 @@
 import React, { useContext, useCallback, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { AppBadge, GU, Tag } from '@aragon/ui'
+import { AppBadge, GU, Tag } from '@conflux-/aragon-ui'
 import { useLocalIdentity } from '../../hooks'
 import { AppType } from '../../prop-types'
 import iconSvgAcl from '../AppIcon/assets/app-acl.svg'
@@ -13,6 +13,7 @@ import {
   IdentityContext,
   identityEventTypes,
 } from '../IdentityManager/IdentityManager'
+import { network } from '../../environment'
 
 const KNOWN_ICONS = new Map([
   [
@@ -78,6 +79,7 @@ const LocalLabelAppBadge = React.memo(function LocalLabelAppBadge({
     >
       <AppBadge
         appAddress={proxyAddress}
+        chainid={network.chainId}
         label={label}
         iconSrc={iconSrc ? `${baseUrl}${iconSrc}` : KNOWN_ICONS.get(appId)}
         {...props}

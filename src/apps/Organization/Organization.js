@@ -11,9 +11,9 @@ import {
   GU,
   textStyle,
   unselectable,
-  useLayout,
+  // useLayout,
   useTheme,
-} from '@aragon/ui'
+} from '@conflux-/aragon-ui'
 import LocalIdentityBadge from '../../components/IdentityBadge/LocalIdentityBadge'
 import appIds from '../../known-app-ids'
 import { network } from '../../environment'
@@ -22,7 +22,11 @@ import { sanitizeNetworkType } from '../../network-config'
 import { AppType, DaoAddressType } from '../../prop-types'
 import { useRouting, ARAGONID_ENS_DOMAIN } from '../../routing'
 import airdrop, { testTokensEnabled } from '../../testnet/airdrop'
-import { toChecksumAddress } from '../../web3-utils'
+import {
+  formatAddress,
+  toChecksumAddress,
+  shortenAddress,
+} from '../../web3-utils'
 import { useWallet } from '../../wallet'
 
 const Organization = React.memo(function Organization({
@@ -34,7 +38,7 @@ const Organization = React.memo(function Organization({
   onShowOrgVersionDetails,
 }) {
   const theme = useTheme()
-  const { layoutName } = useLayout()
+  // const { layoutName } = useLayout()
   const wallet = useWallet()
   const { mode } = useRouting()
   const { orgAddress } = mode
@@ -107,11 +111,11 @@ const Organization = React.memo(function Organization({
   const enableTransactions =
     wallet.connected && wallet.networkType === network.type
   const isMainnet = network.type === 'main'
-  const shortAddresses = layoutName !== 'large'
+  // const shortAddresses = layoutName !== 'large'
 
   const organizationText = checksummedDaoAddr ? (
     <span>
-      This organization is deployed on the Ethereum {network.name}.{' '}
+      This organization is deployed on the {network.name}.{' '}
       {canUpgradeOrg ? (
         <span>
           <Link onClick={onShowOrgVersionDetails}>
@@ -120,10 +124,12 @@ const Organization = React.memo(function Organization({
           .
         </span>
       ) : (
-        <span>
-          The current software version is 0.8 Camino. You can see{' '}
-          <Link onClick={onShowOrgVersionDetails}>what's new here</Link>.
-        </span>
+        false && (
+          <span>
+            The current software version is 0.8 Camino. You can see{' '}
+            <Link onClick={onShowOrgVersionDetails}>what's new here</Link>.
+          </span>
+        )
       )}
     </span>
   ) : (
@@ -168,13 +174,13 @@ const Organization = React.memo(function Organization({
               `}
             >
               <LocalIdentityBadge
-                entity={checksummedDaoAddr}
-                shorten={shortAddresses}
+                entity={formatAddress(checksummedDaoAddr)}
+                shorten={shortenAddress(formatAddress(checksummedDaoAddr))}
               />
             </div>
             <Info>
               <strong css="font-weight: 800">
-                Do not send ETH or ERC20 tokens to this address.
+                Do not send CFX or ERC20 tokens to this address.
               </strong>{' '}
               {depositFundsHelpText}
             </Info>
@@ -231,8 +237,8 @@ const Organization = React.memo(function Organization({
                       `}
                     >
                       <LocalIdentityBadge
-                        entity={proxyAddress}
-                        shorten={shortAddresses}
+                        entity={formatAddress(proxyAddress)}
+                        shorten={shortenAddress(formatAddress(proxyAddress))}
                       />
                     </div>
                   </li>
@@ -240,7 +246,7 @@ const Organization = React.memo(function Organization({
               )}
             </ul>
           </Box>
-          {tenderlyImportUrl && (
+          {tenderlyImportUrl && true === false && (
             <Box heading="Import organization into Tenderly">
               <p
                 css={`

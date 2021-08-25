@@ -13,7 +13,7 @@ import {
   textStyle,
   useLayout,
   useTheme,
-} from '@aragon/ui'
+} from '@conflux-/aragon-ui'
 import AppIcon from '../../../components/AppIcon/AppIcon'
 import ContentMarkdown from './ContentMarkdown'
 import LocalIdentityBadge from '../../../components/IdentityBadge/LocalIdentityBadge'
@@ -22,6 +22,7 @@ import { useRepoDetails } from '../../../hooks'
 import { network } from '../../../environment'
 import Screenshots from '../Screenshots'
 import { sanitizeCodeRepositoryUrl } from '../../../url-utils'
+import { formatAddress } from '../../../web3-utils'
 
 const AppContent = React.memo(
   ({ repo, repoVersions, onRequestUpgrade, onClose }) => {
@@ -171,7 +172,7 @@ const AppContent = React.memo(
                       >
                         {instances.map(({ proxyAddress }) => (
                           <LocalIdentityBadge
-                            entity={proxyAddress}
+                            entity={formatAddress(proxyAddress)}
                             key={proxyAddress}
                           />
                         ))}

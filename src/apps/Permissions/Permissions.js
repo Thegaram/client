@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import { AppType, AragonType } from '../../prop-types'
-import { Button, GU, Header, IconPlus, useLayout } from '@aragon/ui'
+import { Button, GU, Header, IconPlus, useLayout } from '@conflux-/aragon-ui'
 import { removeStartingSlash } from '../../utils'
 import { addressesEqual, isAddress } from '../../web3-utils'
 import { usePermissions } from '../../contexts/PermissionsContext'
@@ -10,6 +10,7 @@ import AppPermissions from './AppPermissions'
 import AssignPermissionPanel from './AssignPermissionPanel'
 import Home from './Home/Home'
 import ManageRolePanel from './ManageRolePanel'
+import { network } from '../../environment'
 
 const HOME_TABS = ['App permissions', 'System permissions']
 
@@ -167,7 +168,12 @@ function Permissions({
                 >
                   {`${location.app.name} permissions`}
                 </div>
-                <LocalLabelAppBadge app={location.app} apps={[]} noIdentifier />
+                <LocalLabelAppBadge
+                  app={location.app}
+                  chainId={network.chainId}
+                  apps={[]}
+                  noIdentifier
+                />
               </div>
             </Header.Title>
           ) : (
